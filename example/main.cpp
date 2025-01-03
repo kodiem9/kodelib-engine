@@ -1,14 +1,15 @@
 #include <PCH.hpp>
 
 int main() {
-    kl::Engine engine;
-    engine.AddType<int>(5);
-    engine.AddType<char>(10);
-    engine.AddType<float>(15);
-    
-    std::cout << engine.GetType<int>() << std::endl;
-    std::cout << engine.GetType<char>() << std::endl;
-    std::cout << engine.GetType<float>() << std::endl;
+    InitWindow(800, 600, "kodelib engine example");
+    SetTargetFPS(60);
 
+    while(!WindowShouldClose()) {
+        BeginDrawing();
+        ClearBackground(LIGHTGRAY);
+        EndDrawing();
+    }
+
+    CloseWindow();
     return 0;
 }
