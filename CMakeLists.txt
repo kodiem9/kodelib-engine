@@ -36,13 +36,14 @@ endif()
 set(PCH_PATH "${CMAKE_SOURCE_DIR}/example/common")
 set(PCH_HEADER "${PCH_PATH}/PCH.hpp")
 set(SOURCE_PATH "${CMAKE_SOURCE_DIR}/example")
+set(LIBRARY_PATH "${CMAKE_SOURCE_DIR}/library")
 
 include_directories("${RAYLIB_PATH}")
 include_directories("${PCH_PATH}")
 file(GLOB_RECURSE SOURCE_FILES "${SOURCE_PATH}/*.cpp")
 
 add_library(kodelib STATIC library/source/kodelib.cpp)
-target_include_directories(kodelib PUBLIC)
+target_include_directories(kodelib PUBLIC "${LIBRARY_PATH}/include")
 target_compile_options(kodelib PRIVATE -Werror -Wextra)
 
 add_executable(game "${SOURCE_FILES}" library/source/kodelib.cpp)
@@ -56,6 +57,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O2 -march=native -flto -fomit-frame-pointer -funro
 
 target_include_directories(game PRIVATE
     "${RAYLIB_PATH}/include"
+    "${LIBRARY_PATH}/include"
 )
 
 target_compile_options(game PRIVATE -Werror -Wextra)
