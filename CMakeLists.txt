@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(game VERSION 1.0)
 
 option(ENABLE_CLANG_TIDY "Enable clang-tidy for static analysis" OFF)
+option(BUILD_LIBRARY "Build static library" OFF)
 
 find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM)
@@ -33,26 +34,29 @@ else()
     message(FATAL_ERROR "Add your raylib path: ${CMAKE_SYSTEM_NAME}")
 endif()
 
-set(PCH_PATH "${CMAKE_SOURCE_DIR}/example/common")
-set(PCH_HEADER "${PCH_PATH}/PCH.hpp")
+set(LIB_PCH_PATH "${CMAKE_SOURCE_DIR}/library/common")
+set(LIB_PCH_HEADER "${LIB_PCH_PATH}/LIB_PCH.hpp")
 set(SOURCE_PATH "${CMAKE_SOURCE_DIR}/example")
 set(LIBRARY_PATH "${CMAKE_SOURCE_DIR}/library")
 
-include_directories("${RAYLIB_PATH}")
-include_directories("${PCH_PATH}")
+include_directories(
+    "${RAYLIB_PATH}"
+    "${LIB_PCH_PATH}"
+)
+
 file(GLOB_RECURSE SOURCE_FILES "${SOURCE_PATH}/*.cpp")
 
 add_library(kodelib STATIC library/source/kodelib.cpp)
 target_include_directories(kodelib PUBLIC "${LIBRARY_PATH}/include")
 target_compile_options(kodelib PRIVATE -Werror -Wextra)
 
-add_executable(game "${SOURCE_FILES}" library/source/kodelib.cpp)
+add_executable(game "${SOURCE_FILES}")
+target_link_libraries(game PRIVATE kodelib)
 
 message(STATUS "Detected operating system: ${CMAKE_SYSTEM_NAME}")
 message(STATUS "Current build type: ${CMAKE_BUILD_TYPE}")
 
 set(CMAKE_CXX_FLAGS_DEBUG "")
-# funroll-loops can increase binary size!
 set(CMAKE_CXX_FLAGS_RELEASE "-O2 -march=native -flto -fomit-frame-pointer -funroll-loops")
 
 target_include_directories(game PRIVATE
@@ -63,7 +67,7 @@ target_include_directories(game PRIVATE
 target_compile_options(game PRIVATE -Werror -Wextra)
 
 if (USE_PCH)
-    target_precompile_headers(game PRIVATE "${PCH_HEADER}")
+    target_precompile_headers(kodelib PRIVATE "${LIB_PCH_HEADER}")
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
