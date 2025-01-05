@@ -5,7 +5,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(game VERSION 1.0)
 
 option(ENABLE_CLANG_TIDY "Enable clang-tidy for static analysis" OFF)
-option(BUILD_LIBRARY "Build static library" OFF)
 
 find_program(CCACHE_PROGRAM ccache)
 if(CCACHE_PROGRAM)
@@ -52,6 +51,9 @@ target_compile_options(kodelib PRIVATE -Werror -Wextra)
 
 add_executable(game "${SOURCE_FILES}")
 target_link_libraries(game PRIVATE kodelib)
+
+set_target_properties(game PROPERTIES UNITY_BUILD ON)
+set_target_properties(kodelib PROPERTIES UNITY_BUILD ON)
 
 message(STATUS "Detected operating system: ${CMAKE_SYSTEM_NAME}")
 message(STATUS "Current build type: ${CMAKE_BUILD_TYPE}")
